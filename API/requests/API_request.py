@@ -9,9 +9,9 @@ class TDData():
 
     def __init__(self, conf_path):
         self.conf_path = conf_path
-        self.session = None
+        self.session = self.createSession()
 
-    def createSession(self):
+    def createSession(self) -> object:
         with open(self.conf_path) as file:
             cfg = yaml.safe_load(file)
             cons_key = cfg['paths']['CONSUMER_KEY']
@@ -47,20 +47,23 @@ class TDData():
     def parseStockData(self):
         return None
 
-    def formatData(par_data):
+    def formatData(par_data: list):
         return pd.DataFrame(par_data)
 
-    def grabOptData(session, symbol):
-        return session.get_options_chain(OptionChain(symbol=symbol))
+    def grabOptData(self,symbol):
+        return self.session.get_options_chain((OptionChain(symbol=symbol)))
 
-    def grabStockData(session, symbol: str, period_type:str = None, period: str = None, start_date:str = None,
-                      end_date:str = None,frequency_type: str = None, frequency: str = None, extended_hours: bool = True):
-        return session.get_price_history(symbol,period_type,period,start_date,end_date,frequency_type,frequency,extended_hours)
+
+    #def grabStockData(self, symbol: str, period_type:str = None, period: str = None, start_date:str = None,
+                      #end_date:str = None, frequency_type: str = None, frequency: str = None, extended_hours: bool = True,):
+
+        #return self.session.get_price_history(symbol,period_type,period,start_date,end_date,frequency_type,frequency,extended_hours)
+
 
 
 def main():
-    session = TDData(conf_path='../../configs/config.yaml').createSession()
-    data_pull = TDData.grabOptData(session, "AAPL")
+    client = TDData(conf_path='../../configs/config.yaml')
+    data_pull = client.grabOptData(symbol='AAPL')
     parsed_data = TDData.parseOptData(data_pull)
     formatted_data = TDData.formatData(parsed_data)
     print(formatted_data)
