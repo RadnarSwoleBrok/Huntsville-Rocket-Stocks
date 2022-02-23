@@ -44,24 +44,18 @@ class TDData():
                     })
         return par_data
 
-    def parseOptData(self:dict, put=False):
-        par_data = []
-        if put:
-          dataMap = self['putExpDateMap']
-        else:
-          dataMap = self['callExpDateMap']
-
-        for expDate, option in dataMap.items():
-            for strike, put_data in option.items():
-                put_data = put_data[0]
-                par_data.append({
-                        'expiration_date': expDate,
-                        'strike': strike,
-                        'ask_price': put_data['ask'],
-                        'bid_price': put_data['bid'],
-                        'mid_price': (put_data['bid'] + put_data['ask']) / 2
-                    })
-        return par_data
+    def parseStockData(self:dict):
+        par_stock_data = []
+        for data in self['candles']:
+            par_stock_data.append({
+                'datetime': data['datetime'],
+                'high': data['high'],
+                'low': data['low'],
+                'open': data['open'],
+                'volume':data['volume'],
+                'close': data['close']
+            })
+        return par_stock_data
 
     def formatData(par_data):
         return pd.DataFrame(par_data)
