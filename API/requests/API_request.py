@@ -44,8 +44,24 @@ class TDData():
                     })
         return par_data
 
-    def parseStockData(self):
-        return None
+    def parseOptData(self:dict, put=False):
+        par_data = []
+        if put:
+          dataMap = self['putExpDateMap']
+        else:
+          dataMap = self['callExpDateMap']
+
+        for expDate, option in dataMap.items():
+            for strike, put_data in option.items():
+                put_data = put_data[0]
+                par_data.append({
+                        'expiration_date': expDate,
+                        'strike': strike,
+                        'ask_price': put_data['ask'],
+                        'bid_price': put_data['bid'],
+                        'mid_price': (put_data['bid'] + put_data['ask']) / 2
+                    })
+        return par_data
 
     def formatData(par_data):
         return pd.DataFrame(par_data)
