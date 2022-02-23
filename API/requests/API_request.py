@@ -44,8 +44,18 @@ class TDData():
                     })
         return par_data
 
-    def parseStockData(self):
-        return None
+    def parseStockData(self:dict):
+        par_stock_data = []
+        for data in self['candles']:
+            par_stock_data.append({
+                'datetime': data['datetime'],
+                'high': data['high'],
+                'low': data['low'],
+                'open': data['open'],
+                'close': data['close'],
+                'volume':data['volume']
+            })
+        return par_stock_data
 
     def formatData(par_data):
         return pd.DataFrame(par_data)
@@ -57,11 +67,15 @@ class TDData():
                       end_date:str = None,frequency_type: str = None, frequency: str = None, extended_hours: bool = True):
         return session.get_price_history(symbol,period_type,period,start_date,end_date,frequency_type,frequency,extended_hours)
 
+    def grabFundamentalData(session, symbol:str, search_type:str):
+        return session.search_instruments(symbol, search_type)
 
 def main():
     session = TDData(conf_path='../../configs/config.yaml').createSession()
-    data_pull = TDData.grabOptData(session, "AAPL")
-    parsed_data = TDData.parseOptData(data_pull)
+    data_pull = TDData.grabStockData(session, "AAPL")
+    #parsed_data = TDData.parseOptData(data_pull)
+    #formatted_data = TDData.formatData(parsed_data)
+    parsed_data = TDData.parseStockData(data_pull)
     formatted_data = TDData.formatData(parsed_data)
     print(formatted_data)
 
